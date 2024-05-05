@@ -1,65 +1,23 @@
+using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public enum NodesState
-{
-    FAILURE,
-    SUCCES,
-    RUNNING
-}
-public abstract class Node
-{
 
-    public List<Node> Children = new List<Node>(); //instanicer?
 
-    public abstract NodesState Evaluate(GameObject contextGo);
-}
-
-public abstract class Composite : Node {
-}
-
-public class Sequence : Composite
-{
-    public override NodesState Evaluate(GameObject contextGo)
+    public abstract class Node
     {
-        NodesState state = NodesState.SUCCES;
-        foreach (Node child in Children) {
-            state = child.Evaluate(contextGo);
-            if (state == NodesState.FAILURE) return NodesState.FAILURE;
-        }
-        return state;
-    }
-}
+        public enum NodeState { SUCCESS, FAILURE, RUNNING };
 
-public class Selector : Composite
-{
-    public override NodesState Evaluate(GameObject contextGo)
-    {
-        foreach (Node child in Children)
+        public NodeState state;
+
+        public Node()
         {
-            NodesState state = child.Evaluate(contextGo);
-            if (state != NodesState.FAILURE) return state;
+            state = NodeState.RUNNING;
         }
-        return NodesState.FAILURE;
-    }
-}
 
-public abstract class Leaf : Node {
-}
-
-public class IsThirsty : Leaf
-{
-    public override NodesState Evaluate(GameObject contextGo)
-    {
-        return contextGo.activeSelf ? NodesState.SUCCES : NodesState.FAILURE;
+        public abstract NodeState Evaluate();
+        
     }
-}
-
-public class IsHungry : Leaf
-{
-    public override NodesState Evaluate(GameObject contextGo)
-    {
-        return contextGo.activeSelf ? NodesState.SUCCES : NodesState.FAILURE;
-    }
-}
+ 
 
